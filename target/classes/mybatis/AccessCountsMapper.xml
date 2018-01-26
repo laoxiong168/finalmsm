@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjj.dao.AccessCountsDao">
+
+
+
+	<!--插入访问数据 -->
+	<insert id="insertAccessCounts" parameterType="long">
+		insert into
+		sys_access_counts (access_counts,create_date) values (#{counts},now())
+	</insert>
+
+
+	<!--查询当天数据是否存在 -->
+	<select id="queryExistData" resultType="map" parameterType="long">
+		select
+		id,access_counts from sys_access_counts where
+		date_format(create_date,'%Y-%m-%d')=
+		date_format(now(),'%Y-%m-%d')
+	</select>
+
+
+	<!--更新当天访问量数据 -->
+	<update id="updateData" parameterType="Map">
+		update sys_access_counts set access_counts=#{counts},create_date=now() where id=#{id}
+	</update>
+
+
+</mapper>
+
+
+
+

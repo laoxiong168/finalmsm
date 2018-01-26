@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zjj.dao.UserDao">
+
+
+
+
+
+
+	<select id="getData" resultType="map">
+		select * from T_SYS_USERINFO
+	</select>
+	<!--超标数 -->
+	<select id="queryResultCounts1" resultType="int">
+		select count(*) from t_data_minute t
+		left join t_cod_item t1 on
+		t.itemcode=t1.itemcode left join
+		t_info_site t2 on
+		t.sitecode=t2.sitecode
+		<!-- where t.UPDATEDATE >to_date((select to_char(sysdate-1/48,'yyyy-mm-dd 
+			hh24:mi:ss') from dual), 'YYYY/MM/DD HH24:MI:SS') -->
+		where 1=1
+		and sitename=#{company}
+		and ITEMNAME=#{name}
+		<if test="max != null and max != '' ">
+			and REVISEDSTRENGTH&gt;#{max, jdbcType=FLOAT}
+		</if>
+		<if test="min != null and min != '' ">
+			and REVISEDSTRENGTH &lt;#{min, jdbcType=FLOAT}
+		</if>
+	</select>
+
+
+
+	<select id="queryResultCounts" resultType="int">
+		select count(*) from (
+
+		<if test="max != null">
+			select * from t_data_minute t
+			left join
+			t_cod_item t1 on
+			t.itemcode=t1.itemcode left join
+			t_info_site t2 on
+			t.sitecode=t2.sitecode
+			where t.UPDATEDATE >to_date((select
+			to_char(sysdate-1/48,'yyyy-mm-dd
+			hh24:mi:ss') from dual), 'YYYY/MM/DD
+			HH24:MI:SS')
+			and
+			sitename=#{company}
+			and
+			ITEMNAME=#{name}
+			and
+			REVISEDSTRENGTH&gt;#{max,
+			jdbcType=FLOAT}
+		</if>
+		<if test="min != null ">
+			<if test="max != null">
+				union all
+			</if>
+			select * from t_data_minute t
+			left join t_cod_item
+			t1 on
+			t.itemcode=t1.itemcode left join
+			t_info_site t2 on
+			t.sitecode=t2.sitecode
+			where t.UPDATEDATE >to_date((select
+			to_char(sysdate-1/48,'yyyy-mm-dd
+			hh24:mi:ss') from dual), 'YYYY/MM/DD
+			HH24:MI:SS')
+			and sitename=#{company}
+			and
+			ITEMNAME=#{name}
+			and
+			REVISEDSTRENGTH &lt;#{min, jdbcType=FLOAT}
+		</if>
+		)
+	</select>
+
+
+</mapper>
+
+
+
+
